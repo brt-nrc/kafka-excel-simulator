@@ -1,5 +1,6 @@
 import json
 import copy
+import functools
 from kafka_excel_sim.message import Message
 from kafka_excel_sim.message_schedule import MessageSchedule
 from kafka_excel_sim.config import MessageConfig
@@ -207,6 +208,7 @@ class MessageBuilder:
                 return False
             return self._path_exists_recursive(current[key], keys[1:])
     
+    @functools.lru_cache(maxsize=1024)
     def _parse_path(self, path: str) -> list:
         """Parse a path string into a list of keys and indices.
         
