@@ -54,14 +54,18 @@ class MessageBuilder:
         except Exception as exc:
             raise exc
 
-        renames: dict[str, str] = {k: v for k,v in schedule.overrides.items() \
-                                   if k.endswith('_rename_to')}
-        override_values: dict[str, str] = {k:v for k,v in schedule.overrides.items() \
-                                           if not k.endswith('_rename_to')}
+        renames: dict[str, str] = {}
+        override_values: dict[str, str] = {}
+        for k, v in schedule.overrides.items():
+            if k.endswith('_rename_to'):
+                destination_dict = renames
+            else:
+                destination_dict = override_values
+            destination_dict.update({k:v})
 
         # built_payload: str = template['raw_payload'].format_map(override_values)
         # built_payload_dict: dict = json.loads(built_payload)
-        template_dict = copy.deepcopy(template['payload'])
+        template_dict = json.loads(template['payload'])
 
         # Filter overrides to only include paths that exist in the template
         # Also skip empty/null values if keep_template_value_where_null is True
