@@ -42,7 +42,7 @@ class MessageConfig:
     keep_template_value_where_null: bool = True
 
     @classmethod
-    def from_dict(cls, data: dict[str,str]) -> MessageConfig:
+    def from_dict(cls, data: dict[str,str]) -> "MessageConfig":
         bool_map = {"true": True, "false": False}
         ktval: str = data.get('Keep template value where schedule override cell is null', "false")
         return cls(
