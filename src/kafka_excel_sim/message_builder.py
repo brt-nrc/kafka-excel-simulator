@@ -1,5 +1,6 @@
 import json
 import copy
+import re
 from kafka_excel_sim.message import Message
 from kafka_excel_sim.message_schedule import MessageSchedule
 from kafka_excel_sim.config import MessageConfig
@@ -100,6 +101,8 @@ class MessageBuilder:
 
     # Sentinel value to represent wildcard in paths
     WILDCARD = '__WILDCARD__'
+
+    _PATH_PATTERN = re.compile(r'([\w-]+)|\[(\d+)\]|\.(\d+)|\[(\*)\]|\.(\*)')
 
     # Separator for paths that cross into a JSON-encoded string field
     STRING_JSON_SEPARATOR = '::'
@@ -214,11 +217,9 @@ class MessageBuilder:
         - 'payload.items.*.name' -> ['payload', 'items', WILDCARD, 'name']
         - 'Good-morning-from' -> ['Good-morning-from'] (keys with dashes)
         """
-        import re
         keys = []
         # Match: word chars (including dashes and underscores), array index [n], .n, wildcard [*], or .*
-        pattern = r'([\w-]+)|\[(\d+)\]|\.(\d+)|\[(\*)\]|\.(\*)'
-        matches = re.findall(pattern, path)
+        matches = self._PATH_PATTERN.findall(path)
         
         for match in matches:
             if match[0]:  # word characters (including dashes/underscores)
